@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Jogos</title>
+</head>
+<body>
+    <h1>Catálogo de Jogos</h1>
+
+    <form method="get">
+        <input type="text" name="busca" value="{{ busca }}" placeholder="Pesquisar por nome do jogo">
+
+        <select name="desenvolvedora">
+            <option value="">Todas as desenvolvedoras</option>
+            {% for dev in desenvolvedoras %}
+                <option value="{{ dev.id }}" {% if dev.id|stringformat:"s" == desenvolvedora_selecionada %}selected{% endif %}>
+                    {{ dev.nome }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="plataforma">
+            <option value="">Todas as plataformas</option>
+            {% for plat in plataformas %}
+                <option value="{{ plat.id }}" {% if plat.id|stringformat:"s" == plataforma_selecionada %}selected{% endif %}>
+                    {{ plat.nome }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Filtrar</button>
+        <a href="{% url 'listar_jogos' %}">Limpar</a>
+    </form>
+
+    <hr>
+
+    <ul>
+        {% for jogo in page_obj %}
+            <li>
+                <strong>{{ jogo.nome }}</strong><br>
+                Desenvolvedora: {{ jogo.desenvolvedora.nome }}<br>
+                Plataformas: 
+                {% for plat in jogo.plataformas.all %}
+                    {{ plat.nome }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </li>
+            <br>
+        {% empty %}
+            <li>Nenhum jogo encontrado com os critérios informados.</li>
+        {% endfor %}
+    </ul>
+
+    <hr>
+
+    <div>
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}&busca={{ busca }}&desenvolvedora={{ desenvolvedora_selecionada }}&plataforma={{ plataforma_selecionada }}">
+                Anterior
+            </a>
+        {% endif %}
+
+        <span>
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}&busca={{ busca }}&desenvolvedora={{ desenvolvedora_selecionada }}&plataforma={{ plataforma_selecionada }}">
+                Seguinte
+            </a>
+        {% endif %}
+    </div>
+</body>
+</html>
